@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppBottomNav" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemRippleColor">@android:color/transparent</item>
+        <item name="itemBackground">@android:color/transparent</item>
+        <item name="itemIconSize">30dp</item>
+        <!--<item name="itemActiveIndicatorEnabled">false</item> -->
+    </style>
+
+</resources>
