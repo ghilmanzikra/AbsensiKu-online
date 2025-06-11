@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsenKu"
         android:networkSecurityConfig="@xml/network_security_config"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:replace="android:icon,android:roundIcon,android:label,android:theme">
 
         <!-- Activity utama -->
         <activity
@@ -27,14 +28,23 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginSiswaActivity" />
-        <activity android:name=".LoginGuruActivity" />
+        <activity android:name=".LoginSiswaActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".LoginGuruActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".DashboardActivity" />
         <activity android:name=".DashboardActivityGuru" />
         <activity android:name=".AbsenActivity" />
         <activity android:name=".TugasActivity" />
         <activity android:name=".ProfilActivity" />
+        <activity android:name=".ProfilGuruActivity" />
+        <activity android:name=".EditPasswordActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".EditInfoPribadiActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".EditInfoPribadiGuruActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

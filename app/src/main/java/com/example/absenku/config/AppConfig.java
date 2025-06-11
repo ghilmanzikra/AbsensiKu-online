@@ -5,6 +5,14 @@ public class AppConfig {
     // Set ke true untuk menggunakan mock login (offline)
     // Set ke false untuk menggunakan real API
     public static final boolean USE_MOCK_LOGIN = true;
+
+    // Set ke true untuk menggunakan mock profile (offline)
+    // Set ke false untuk menggunakan real API
+    public static final boolean USE_MOCK_PROFILE = true;
+
+    // Set ke true untuk menggunakan mock password service (offline)
+    // Set ke false untuk menggunakan real API
+    public static final boolean USE_MOCK_PASSWORD = true;
     
     // URL API yang berbeda untuk testing
     public static final String PRODUCTION_API_URL = "https://absensi-backend-gabungan.up.railway.app/";

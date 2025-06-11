@@ -63,10 +63,13 @@
                 android:id="@+id/etNis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Masukkan username siswa"
+                android:hint="Username"
                 android:background="@drawable/edit_text_background"
                 android:padding="12dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:imeOptions="actionNext" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -76,15 +79,36 @@
                 android:layout_marginBottom="5dp"
                 android:textSize="16sp"/>
 
-            <EditText
-                android:id="@+id/etPassword"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:background="@drawable/edit_text_background"
-                android:padding="12dp"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="24dp">
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:background="@drawable/edit_text_background"
+                    android:padding="12dp"
+                    android:paddingEnd="48dp"
+                    android:maxLines="1"
+                    android:imeOptions="actionDone" />
+
+                <ImageView
+                    android:id="@+id/ivPasswordToggle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_visibility_off"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:contentDescription="Toggle password visibility" />
+
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/btnLoginSiswa"
