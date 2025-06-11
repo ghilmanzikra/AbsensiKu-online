@@ -11,30 +11,33 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginGuruActivity extends AppCompatActivity {
 
-    EditText etNis, etPassword;
-    Button btnLoginSiswa;
+    EditText etIdGuru, etPassword;
+    Button btnLoginGuru;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_siswa);
+        setContentView(R.layout.activity_login_guru);
 
-        etNis = findViewById(R.id.etNis);
+        etIdGuru = findViewById(R.id.etIdGuru);
         etPassword = findViewById(R.id.etPassword);
-        btnLoginSiswa = findViewById(R.id.btnLoginSiswa);
+        btnLoginGuru = findViewById(R.id.btnLoginGuru);
 
-        btnLoginSiswa.setOnClickListener(v -> {
-            String nis = etNis.getText().toString().trim();
+        btnLoginGuru.setOnClickListener(v -> {
+            String idGuru = etIdGuru.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
 
-            if (nis.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "NIS dan Password harus diisi", Toast.LENGTH_SHORT).show();
+            if (idGuru.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "ID Guru dan Password harus diisi", Toast.LENGTH_SHORT).show();
             } else {
-                // Setelah login berhasil
-                Intent intent = new Intent(LoginGuruActivity.this, DashboardActivityGuru.class);
-
-                startActivity(intent);
-                finish(); // agar tombol back tidak kembali ke login
+                try {
+                    // Setelah login berhasil
+                    Intent intent = new Intent(LoginGuruActivity.this, DashboardActivityGuru.class);
+                    startActivity(intent);
+                    finish(); // agar tombol back tidak kembali ke login
+                } catch (Exception e) {
+                    Toast.makeText(this, "Terjadi kesalahan: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
 

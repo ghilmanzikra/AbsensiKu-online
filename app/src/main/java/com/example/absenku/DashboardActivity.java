@@ -24,8 +24,6 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.nav_absen) {
                 startActivity(new Intent(this, AbsenActivity.class));
-            } else if (id == R.id.nav_tugas) {
-                startActivity(new Intent(this, TugasActivity.class));
             } else if (id == R.id.nav_profil) {
                 startActivity(new Intent(this, ProfilActivity.class));
             }
