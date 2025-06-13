@@ -131,7 +131,7 @@ public class ProfilGuruActivity extends AppCompatActivity {
             return;
         }
         
-        if (AppConfig.USE_MOCK_LOGIN) {
+        if (AppConfig.USE_MOCK_PROFILE) {
             loadMockProfileData(username);
         } else {
             loadRealProfileData();

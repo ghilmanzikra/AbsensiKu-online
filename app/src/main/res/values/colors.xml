@@ -1,7 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- AbsenKu Green Theme - Professional & Beautiful -->
     <color name="primary_green">#55AD9B</color>
     <color name="primary_green_dark">#4A9B89</color>
+    <color name="primary_green_light">#6BC4B2</color>
+    <color name="primary_green_very_light">#E8F5F3</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_blue">#2196F3</color>
+    <color name="accent_blue_light">#E3F2FD</color>
+
+    <!-- Status Colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="warning_orange">#FF9800</color>
+    <color name="error_red">#F44336</color>
+    <color name="info_blue">#2196F3</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Background Colors -->
+    <color name="background_primary">#FAFAFA</color>
+    <color name="background_card">#FFFFFF</color>
+    <color name="background_surface">#F5F5F5</color>
+
+    <!-- Border & Divider -->
+    <color name="border_light">#E0E0E0</color>
+    <color name="border_medium">#BDBDBD</color>
+    <color name="divider">#EEEEEE</color>
+
+    <!-- Shadow -->
+    <color name="shadow_light">#1A000000</color>
+    <color name="shadow_medium">#33000000</color>
 </resources>

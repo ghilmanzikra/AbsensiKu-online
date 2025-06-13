@@ -12,8 +12,7 @@ import com.example.absenku.api.ApiClient;
 import com.example.absenku.api.ApiService;
 import com.example.absenku.api.MockPasswordService;
 import com.example.absenku.config.AppConfig;
-import com.example.absenku.models.ChangePasswordRequest;
-import com.example.absenku.models.ChangePasswordResponse;
+
 import com.example.absenku.utils.SessionManager;
 import com.example.absenku.utils.SweetAlertHelper;
 import retrofit2.Call;
@@ -170,12 +169,8 @@ public class EditPasswordActivity extends AppCompatActivity {
         btnSimpan.setEnabled(false);
         btnSimpan.setText("Menyimpan...");
         
-        // Perform password change
-        if (AppConfig.USE_MOCK_PASSWORD) {
-            changePasswordMock(passwordLama, passwordBaru);
-        } else {
-            changePasswordReal(passwordLama, passwordBaru);
-        }
+        // Perform password change - menggunakan mock service karena API tidak memiliki endpoint change password
+        changePasswordMock(passwordLama, passwordBaru);
     }
     
     private void changePasswordMock(String passwordLama, String passwordBaru) {
@@ -203,43 +198,7 @@ public class EditPasswordActivity extends AppCompatActivity {
         }, 1000); // Delay 1 detik
     }
     
-    private void changePasswordReal(String passwordLama, String passwordBaru) {
-        String token = sessionManager.getToken();
-        if (token == null || token.isEmpty()) {
-            SweetAlertHelper.showError(this, "Error", "Token tidak ditemukan");
-            resetButton();
-            return;
-        }
-        
-        ChangePasswordRequest request = new ChangePasswordRequest(passwordLama, passwordBaru);
-        
-        Call<ChangePasswordResponse> call;
-        if ("guru".equals(userRole)) {
-            call = apiService.changeGuruPassword("Bearer " + token, request);
-        } else {
-            call = apiService.changeStudentPassword("Bearer " + token, request);
-        }
-        
-        call.enqueue(new Callback<ChangePasswordResponse>() {
-            @Override
-            public void onResponse(Call<ChangePasswordResponse> call, Response<ChangePasswordResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    SweetAlertHelper.showSuccess(EditPasswordActivity.this, "Berhasil", "Password berhasil diubah", () -> {
-                        navigateBackToProfile();
-                    });
-                } else {
-                    SweetAlertHelper.showError(EditPasswordActivity.this, "Error", "Gagal mengubah password");
-                    resetButton();
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<ChangePasswordResponse> call, Throwable t) {
-                SweetAlertHelper.showError(EditPasswordActivity.this, "Error", "Gagal terhubung ke server: " + t.getMessage());
-                resetButton();
-            }
-        });
-    }
+
     
     private void resetButton() {
         btnSimpan.setEnabled(true);

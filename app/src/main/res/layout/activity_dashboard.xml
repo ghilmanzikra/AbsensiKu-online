@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/background_primary">
 
     <!-- ScrollView agar konten bisa digulir jika terlalu panjang -->
     <ScrollView
@@ -19,30 +19,36 @@
             <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:background="#55AD9B"
-                android:gravity="center">
+                android:layout_height="160dp"
+                android:background="@color/primary_green"
+                android:gravity="center"
+                android:elevation="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Dashboard"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
                     android:layout_marginTop="-40dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:drawableStart="@drawable/ic_dashboard"
+                    android:drawablePadding="12dp"
+                    android:gravity="center_vertical" />
             </LinearLayout>
 
             <!-- Card Info -->
             <androidx.cardview.widget.CardView
+                style="@style/AppCard.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-80dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/background_card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -60,15 +66,15 @@
 
                         <TextView
                             android:id="@+id/tvUserInitial"
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
                             android:text="U"
-                            android:textSize="24sp"
+                            android:textSize="26sp"
                             android:textStyle="bold"
-                            android:textColor="#55AD9B"
+                            android:textColor="@color/white"
                             android:gravity="center"
-                            android:background="@drawable/circle_initial_background"
-                            android:layout_marginEnd="16dp" />
+                            android:background="@drawable/circle_background"
+                            android:layout_marginEnd="20dp" />
 
                         <LinearLayout
                             android:orientation="vertical"
@@ -77,20 +83,23 @@
 
                             <TextView
                                 android:id="@+id/tvNama"
+                                style="@style/AppText.Subtitle"
                                 android:text="Loading..."
                                 android:textStyle="bold"
-                                android:textColor="#1D3557"
-                                android:textSize="16sp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="18sp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
 
                             <TextView
                                 android:id="@+id/tvNis"
+                                style="@style/AppText.Caption"
                                 android:text="Loading..."
-                                android:textColor="#A0A0A0"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="14sp"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -160,7 +169,7 @@
         style="@style/AppBottomNav"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:background="#55AD9B"
+        android:background="@color/primary_green"
         app:menu="@menu/bottom_nav_menu"
         android:layout_alignParentBottom="true"
         app:labelVisibilityMode="labeled"

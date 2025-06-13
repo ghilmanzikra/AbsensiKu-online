@@ -14,8 +14,13 @@ import com.example.absenku.api.ApiService;
 import com.example.absenku.api.MockGuruProfileService;
 import com.example.absenku.config.AppConfig;
 import com.example.absenku.models.GuruProfileResponse;
+import com.example.absenku.models.UpdateProfileRequest;
+import com.example.absenku.models.UpdateProfileResponse;
 import com.example.absenku.utils.SessionManager;
 import com.example.absenku.utils.SweetAlertHelper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EditInfoPribadiGuruActivity extends AppCompatActivity {
 
@@ -193,9 +198,28 @@ public class EditInfoPribadiGuruActivity extends AppCompatActivity {
     }
 
     private void loadRealProfile(String username, String role) {
-        // Implementation untuk real API jika diperlukan
-        SweetAlertHelper.showInfo(this, "Info", "Real API belum diimplementasi, menggunakan mock data");
-        loadMockProfile(username, role);
+        String token = sessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            SweetAlertHelper.showError(this, "Error", "Token tidak ditemukan");
+            return;
+        }
+
+        Call<GuruProfileResponse> call = apiService.getGuruProfile("Bearer " + token);
+        call.enqueue(new Callback<GuruProfileResponse>() {
+            @Override
+            public void onResponse(Call<GuruProfileResponse> call, Response<GuruProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    populateFields(response.body());
+                } else {
+                    SweetAlertHelper.showError(EditInfoPribadiGuruActivity.this, "Error", "Gagal memuat profil");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GuruProfileResponse> call, Throwable t) {
+                SweetAlertHelper.showError(EditInfoPribadiGuruActivity.this, "Error", "Gagal terhubung ke server: " + t.getMessage());
+            }
+        });
     }
 
     private void performUpdateProfile() {
@@ -299,10 +323,34 @@ public class EditInfoPribadiGuruActivity extends AppCompatActivity {
         btnSimpan.setText("Simpan");
     }
 
-    private void performRealUpdate(String username, String role, String namaLengkap, String nip, 
+    private void performRealUpdate(String username, String role, String namaLengkap, String nip,
                                  String mataPelajaran, String jenisKelamin, String alamat, String nomorHp) {
-        // Implementation untuk real API jika diperlukan
-        SweetAlertHelper.showInfo(this, "Info", "Real API belum diimplementasi");
+        String token = sessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            SweetAlertHelper.showError(this, "Error", "Token tidak ditemukan");
+            return;
+        }
+
+        UpdateProfileRequest request = new UpdateProfileRequest(namaLengkap, alamat, nomorHp);
+
+        Call<UpdateProfileResponse> call = apiService.updateGuruProfile("Bearer " + token, request);
+        call.enqueue(new Callback<UpdateProfileResponse>() {
+            @Override
+            public void onResponse(Call<UpdateProfileResponse> call, Response<UpdateProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    SweetAlertHelper.showSuccess(EditInfoPribadiGuruActivity.this, "Berhasil", "Profil berhasil diperbarui", () -> {
+                        navigateBackToProfile();
+                    });
+                } else {
+                    SweetAlertHelper.showError(EditInfoPribadiGuruActivity.this, "Error", "Gagal memperbarui profil");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateProfileResponse> call, Throwable t) {
+                SweetAlertHelper.showError(EditInfoPribadiGuruActivity.this, "Error", "Gagal terhubung ke server: " + t.getMessage());
+            }
+        });
     }
 
     private void navigateBackToProfile() {

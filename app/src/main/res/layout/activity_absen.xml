@@ -1,6 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_primary">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_green"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:gravity="center_vertical"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Absensi"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="32dp" />
+
+    </LinearLayout>
+
+    <!-- Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Date Picker Card -->
+            <androidx.cardview.widget.CardView
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        style="@style/AppText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih Tanggal"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="12dp"
+                        android:drawableStart="@drawable/ic_calendar"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical" />
+
+                    <EditText
+                        android:id="@+id/etTanggal"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/edit_text_background"
+                        android:padding="16dp"
+                        android:hint="Pilih tanggal"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/ic_arrow_back"
+                        android:drawablePadding="12dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Class Selector Card (for Guru) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardKelas"
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        style="@style/AppText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih Kelas"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="12dp"
+                        android:drawableStart="@drawable/ic_school"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical" />
+
+                    <Spinner
+                        android:id="@+id/spinnerKelas"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/edit_text_background"
+                        android:padding="16dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Load Button -->
+            <Button
+                android:id="@+id/btnLoadAbsensi"
+                style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Muat Data Absensi"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"
+                android:drawableStart="@drawable/ic_refresh"
+                android:drawablePadding="8dp" />
+
+            <!-- Clear Data Button (for testing) -->
+            <Button
+                android:id="@+id/btnClearData"
+                style="@style/AppButton.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Clear Data (Testing)"
+                android:textSize="14sp"
+                android:layout_marginBottom="20dp"
+                android:drawableStart="@drawable/ic_clear"
+                android:drawablePadding="8dp" />
+
+            <!-- Absensi List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAbsensi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Submit Button (for Guru) -->
+            <Button
+                android:id="@+id/btnSubmitAbsensi"
+                style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Simpan Absensi"
+                android:textSize="16sp"
+                android:visibility="gone"
+                android:backgroundTint="@color/success_green"
+                android:drawableStart="@drawable/ic_save"
+                android:drawablePadding="8dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/AppBottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/primary_green"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:itemBackground="@android:color/transparent"
+        app:itemRippleColor="@android:color/transparent"
+        android:elevation="8dp" />
+
+</LinearLayout>
