@@ -417,9 +417,36 @@ public class AbsenActivity extends AppCompatActivity {
                 SweetAlertHelper.showError(this, "Error", "Pilih kelas terlebih dahulu");
                 return;
             }
-            selectedKelasId = kelasList.get(spinnerKelas.getSelectedItemPosition()).getId_kelas();
-            Log.d("AbsenActivity", "Loading absensi for kelas: " + selectedKelasId + ", tanggal: " + selectedDate);
-            loadAbsensiByKelas(token, selectedKelasId, selectedDate);
+
+            // 🔍 ENHANCED KELAS SELECTION LOGGING
+            int selectedPosition = spinnerKelas.getSelectedItemPosition();
+            Log.d("AbsenActivity", "=== KELAS SELECTION DEBUG ===");
+            Log.d("AbsenActivity", "Selected Position: " + selectedPosition);
+            Log.d("AbsenActivity", "Kelas List Size: " + kelasList.size());
+
+            if (selectedPosition >= 0 && selectedPosition < kelasList.size()) {
+                KelasResponse.KelasData selectedKelas = kelasList.get(selectedPosition);
+                selectedKelasId = selectedKelas.getId_kelas();
+
+                Log.d("AbsenActivity", "Selected Kelas Details:");
+                Log.d("AbsenActivity", "  - ID: " + selectedKelas.getId_kelas());
+                Log.d("AbsenActivity", "  - Nama: " + selectedKelas.getNama_kelas());
+                Log.d("AbsenActivity", "  - Guru ID: " + selectedKelas.getGuru_id());
+                if (selectedKelas.getNama_guru() != null) {
+                    Log.d("AbsenActivity", "  - Nama Guru: " + selectedKelas.getNama_guru());
+                }
+                if (selectedKelas.getJumlah_siswa() > 0) {
+                    Log.d("AbsenActivity", "  - Jumlah Siswa: " + selectedKelas.getJumlah_siswa());
+                }
+
+                Log.d("AbsenActivity", "Loading absensi for kelas: " + selectedKelasId + ", tanggal: " + selectedDate);
+                loadAbsensiByKelas(token, selectedKelasId, selectedDate);
+            } else {
+                resetLoadButton();
+                Log.e("AbsenActivity", "Invalid kelas selection: position=" + selectedPosition + ", listSize=" + kelasList.size());
+                SweetAlertHelper.showError(this, "Error", "Kelas tidak valid");
+                return;
+            }
         } else {
             // Siswa loads their own absensi
             loadSiswaAbsensi(token);
@@ -451,23 +478,57 @@ public class AbsenActivity extends AppCompatActivity {
     }
 
     private List<SiswaListResponse.SiswaData> removeDuplicateSiswa(List<SiswaListResponse.SiswaData> siswaList) {
-        Log.d("AbsenActivity", "Removing duplicate siswa from API response");
+        Log.d("AbsenActivity", "=== REMOVING DUPLICATE SISWA ===");
+        Log.d("AbsenActivity", "Input list size: " + siswaList.size());
 
         // Use LinkedHashMap to maintain order and remove duplicates by ID (String)
         Map<String, SiswaListResponse.SiswaData> uniqueSiswaMap = new LinkedHashMap<>();
 
-        for (SiswaListResponse.SiswaData siswa : siswaList) {
+        for (int i = 0; i < siswaList.size(); i++) {
+            SiswaListResponse.SiswaData siswa = siswaList.get(i);
             String siswaId = siswa.getId();
+
+            // Validate siswa data
+            if (siswaId == null || siswaId.trim().isEmpty()) {
+                Log.w("AbsenActivity", "⚠️ WARNING: Siswa[" + i + "] has NULL or empty ID: " + siswa.getNama());
+                continue;
+            }
+
+            if (siswa.getNama() == null || siswa.getNama().trim().isEmpty()) {
+                Log.w("AbsenActivity", "⚠️ WARNING: Siswa[" + i + "] has NULL or empty name (ID: " + siswaId + ")");
+                continue;
+            }
+
             if (!uniqueSiswaMap.containsKey(siswaId)) {
                 uniqueSiswaMap.put(siswaId, siswa);
-                Log.d("AbsenActivity", "Added unique siswa: " + siswa.getNama() + " (ID: " + siswaId + ")");
+                Log.d("AbsenActivity", "✅ Added unique siswa[" + i + "]: " + siswa.getNama() +
+                      " (ID: " + siswaId + ", NIS: " + siswa.getNis() + ")");
             } else {
-                Log.d("AbsenActivity", "Skipped duplicate siswa: " + siswa.getNama() + " (ID: " + siswaId + ")");
+                SiswaListResponse.SiswaData existing = uniqueSiswaMap.get(siswaId);
+                Log.w("AbsenActivity", "⚠️ Skipped duplicate siswa[" + i + "]: " + siswa.getNama() +
+                      " (ID: " + siswaId + ") - Already have: " + existing.getNama());
             }
         }
 
         List<SiswaListResponse.SiswaData> uniqueList = new ArrayList<>(uniqueSiswaMap.values());
-        Log.d("AbsenActivity", "Duplicate removal complete: " + siswaList.size() + " -> " + uniqueList.size());
+        Log.d("AbsenActivity", "=== DEDUPLICATION COMPLETE ===");
+        Log.d("AbsenActivity", "Original count: " + siswaList.size());
+        Log.d("AbsenActivity", "Unique count: " + uniqueList.size());
+        Log.d("AbsenActivity", "Duplicates removed: " + (siswaList.size() - uniqueList.size()));
+
+        // Final validation
+        if (uniqueList.size() < 3) {
+            Log.e("AbsenActivity", "🚨 CRITICAL: Only " + uniqueList.size() + " unique siswa after deduplication!");
+            Log.e("AbsenActivity", "Expected at least 3 siswa from database");
+
+            // Log all unique siswa for debugging
+            Log.d("AbsenActivity", "=== FINAL UNIQUE SISWA LIST ===");
+            for (int i = 0; i < uniqueList.size(); i++) {
+                SiswaListResponse.SiswaData siswa = uniqueList.get(i);
+                Log.d("AbsenActivity", "Final[" + i + "]: " + siswa.getNama() +
+                      " (ID: " + siswa.getId() + ", NIS: " + siswa.getNis() + ")");
+            }
+        }
 
         return uniqueList;
     }
@@ -583,39 +644,129 @@ public class AbsenActivity extends AppCompatActivity {
     }
 
     private void loadSiswaForNewAbsensi(String token, int kelasId) {
+        Log.d("AbsenActivity", "=== LOADING SISWA FOR NEW ABSENSI ===");
+        Log.d("AbsenActivity", "Kelas ID: " + kelasId);
+        Log.d("AbsenActivity", "Token: " + (token != null ? "Present" : "NULL"));
+        Log.d("AbsenActivity", "API URL: /api/siswa/list?id_kelas=" + kelasId);
+
         // Note: Button already reset in parent method, no need to reset again
         Call<SiswaListResponse> call = apiService.getSiswaByKelas("Bearer " + token, kelasId);
         call.enqueue(new Callback<SiswaListResponse>() {
             @Override
             public void onResponse(Call<SiswaListResponse> call, Response<SiswaListResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<SiswaListResponse.SiswaData> siswaList = response.body().getSiswa();
-                    Log.d("AbsenActivity", "API Response - Raw siswa count: " + siswaList.size());
+                Log.d("AbsenActivity", "=== API RESPONSE RECEIVED ===");
+                Log.d("AbsenActivity", "Response Code: " + response.code());
+                Log.d("AbsenActivity", "Response Successful: " + response.isSuccessful());
+                Log.d("AbsenActivity", "Response Body: " + (response.body() != null ? "Present" : "NULL"));
 
-                    // Debug: Print all siswa from API
-                    for (int i = 0; i < siswaList.size(); i++) {
-                        SiswaListResponse.SiswaData siswa = siswaList.get(i);
-                        Log.d("AbsenActivity", "API Siswa[" + i + "]: " + siswa.getNama() + " (ID: " + siswa.getId() + ", NIS: " + siswa.getNis() + ")");
+                // 🔍 LOG RAW RESPONSE
+                try {
+                    if (response.raw() != null) {
+                        Log.d("AbsenActivity", "Raw Response URL: " + response.raw().request().url());
+                        Log.d("AbsenActivity", "Raw Response Headers: " + response.headers().toString());
+                    }
+                    if (response.errorBody() != null) {
+                        String errorBody = response.errorBody().string();
+                        Log.e("AbsenActivity", "Error Body: " + errorBody);
+                    }
+                } catch (Exception e) {
+                    Log.e("AbsenActivity", "Error reading raw response: " + e.getMessage());
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    SiswaListResponse responseBody = response.body();
+                    Log.d("AbsenActivity", "=== RESPONSE BODY DETAILS ===");
+                    Log.d("AbsenActivity", "Message: " + responseBody.getMessage());
+                    Log.d("AbsenActivity", "ID Kelas: " + responseBody.getId_kelas());
+                    Log.d("AbsenActivity", "Total Siswa (from API): " + responseBody.getTotal_siswa());
+
+                    List<SiswaListResponse.SiswaData> siswaList = responseBody.getSiswa();
+                    if (siswaList != null) {
+                        Log.d("AbsenActivity", "Siswa List Size: " + siswaList.size());
+                        Log.d("AbsenActivity", "=== ALL SISWA FROM API ===");
+
+                        // Debug: Print all siswa from API with detailed info
+                        for (int i = 0; i < siswaList.size(); i++) {
+                            SiswaListResponse.SiswaData siswa = siswaList.get(i);
+                            Log.d("AbsenActivity", "Siswa[" + i + "]: " +
+                                  "ID=" + siswa.getId() +
+                                  ", Nama=" + siswa.getNama() +
+                                  ", NIS=" + siswa.getNis() +
+                                  ", Username=" + siswa.getUsername() +
+                                  ", JenisKelamin=" + siswa.getJenis_kelamin());
+                        }
+
+                        // Check if we have the expected number of students
+                        if (siswaList.size() != responseBody.getTotal_siswa()) {
+                            Log.w("AbsenActivity", "⚠️ WARNING: Siswa list size (" + siswaList.size() +
+                                  ") doesn't match total_siswa (" + responseBody.getTotal_siswa() + ")");
+                        }
+
+                        // Remove duplicates based on ID
+                        Log.d("AbsenActivity", "=== REMOVING DUPLICATES ===");
+                        List<SiswaListResponse.SiswaData> uniqueSiswaList = removeDuplicateSiswa(siswaList);
+                        Log.d("AbsenActivity", "Before deduplication: " + siswaList.size() + " siswa");
+                        Log.d("AbsenActivity", "After deduplication: " + uniqueSiswaList.size() + " unique siswa");
+
+                        // Final check
+                        if (uniqueSiswaList.size() < 3) {
+                            Log.e("AbsenActivity", "🚨 CRITICAL: Only " + uniqueSiswaList.size() +
+                                  " siswa found! Expected 3 siswa from database.");
+                            Log.e("AbsenActivity", "This will cause issues with asdos demo!");
+                        }
+
+                        // Create fresh adapter for new absensi
+                        adapter = AbsensiAdapter.createForNewAbsensi(AbsenActivity.this, uniqueSiswaList);
+                        rvAbsensi.setAdapter(adapter);
+                        Log.d("AbsenActivity", "✅ New absensi adapter set successfully with " + uniqueSiswaList.size() + " siswa");
+
+                        // Show success message with count and details
+                        String successMessage = "Data siswa berhasil dimuat: " + uniqueSiswaList.size() + " siswa";
+                        if (responseBody.getTotal_siswa() != uniqueSiswaList.size()) {
+                            successMessage += "\n⚠️ Perhatian: API mengatakan ada " + responseBody.getTotal_siswa() +
+                                            " siswa, tapi hanya " + uniqueSiswaList.size() + " yang berhasil dimuat.";
+                        }
+
+                        // Add siswa names for confirmation
+                        if (uniqueSiswaList.size() <= 5) { // Only show names if not too many
+                            successMessage += "\n\nSiswa yang dimuat:";
+                            for (int i = 0; i < uniqueSiswaList.size(); i++) {
+                                successMessage += "\n" + (i+1) + ". " + uniqueSiswaList.get(i).getNama();
+                            }
+                        }
+
+                        SweetAlertHelper.showSuccess(AbsenActivity.this, "Berhasil", successMessage, null);
+                    } else {
+                        Log.e("AbsenActivity", "❌ Siswa list is NULL in response body");
+                        SweetAlertHelper.showError(AbsenActivity.this, "Error", "Data siswa kosong dari server");
+                    }
+                } else {
+                    Log.e("AbsenActivity", "❌ API Response Failed");
+                    Log.e("AbsenActivity", "Response code: " + response.code());
+                    Log.e("AbsenActivity", "Response message: " + response.message());
+
+                    String errorMsg = "Gagal memuat data siswa";
+                    if (response.code() == 404) {
+                        errorMsg = "Kelas tidak ditemukan atau tidak ada siswa di kelas ini";
+                    } else if (response.code() == 401) {
+                        errorMsg = "Token tidak valid, silakan login ulang";
+                    } else if (response.code() == 500) {
+                        errorMsg = "Server error, silakan coba lagi";
                     }
 
-                    // Remove duplicates based on ID
-                    List<SiswaListResponse.SiswaData> uniqueSiswaList = removeDuplicateSiswa(siswaList);
-                    Log.d("AbsenActivity", "After removing duplicates: " + uniqueSiswaList.size() + " unique siswa");
-
-                    // Create fresh adapter for new absensi
-                    adapter = AbsensiAdapter.createForNewAbsensi(AbsenActivity.this, uniqueSiswaList);
-                    rvAbsensi.setAdapter(adapter);
-                    Log.d("AbsenActivity", "New absensi adapter set successfully with " + uniqueSiswaList.size() + " siswa");
-                } else {
-                    Log.e("AbsenActivity", "Failed to load siswa data - Response code: " + response.code());
-                    SweetAlertHelper.showError(AbsenActivity.this, "Error", "Gagal memuat data siswa");
+                    SweetAlertHelper.showError(AbsenActivity.this, "Error", errorMsg + " (Code: " + response.code() + ")");
                 }
             }
 
             @Override
             public void onFailure(Call<SiswaListResponse> call, Throwable t) {
-                Log.e("AbsenActivity", "Error loading siswa: " + t.getMessage());
-                SweetAlertHelper.showError(AbsenActivity.this, "Error", "Gagal terhubung ke server: " + t.getMessage());
+                Log.e("AbsenActivity", "❌ NETWORK ERROR loading siswa");
+                Log.e("AbsenActivity", "Error message: " + t.getMessage());
+                Log.e("AbsenActivity", "Error class: " + t.getClass().getSimpleName());
+                t.printStackTrace();
+
+                SweetAlertHelper.showError(AbsenActivity.this, "Error",
+                    "Gagal terhubung ke server: " + t.getMessage() + "\n\nSilakan periksa koneksi internet dan coba lagi.");
             }
         });
     }
